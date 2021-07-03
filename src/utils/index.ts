@@ -1,4 +1,26 @@
 /**
+ * 获取舞台区域展示的宽高
+ *
+ */
+export function getStageSize() {
+  const { clientWidth, clientHeight } = document.documentElement;
+
+  const styles = getComputedStyle(document.documentElement);
+
+  const getValue = (name: string) =>
+    parseFloat(styles.getPropertyValue(name)) || 0;
+
+  const headerHeight = getValue(`--header-height`),
+    asideWidth = getValue(`--aside-width`),
+    panelWidth = getValue(`--panel-width`);
+
+  return {
+    width: clientWidth - (asideWidth + panelWidth),
+    height: clientHeight - headerHeight,
+  };
+}
+
+/**
  * 防抖(debounce)
  *
  * @param {Function} fn - 目标函数
