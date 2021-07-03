@@ -135,13 +135,11 @@ export function drawAxes(ctx: CanvasRenderingContext2D) {
  *
  * @param {Function} fn - 目标函数
  * @param {number} delay - 延迟执行毫秒数
- * @return {*} {(this: any) => void}
  */
-export function debounce(fn: Function, delay: number): (this: any) => void {
+export function debounce<T = any>(fn: (...args: T[]) => void, delay: number) {
   let timer: number;
-  return function (this: any) {
-    const context = this,
-      args = arguments;
+  return function (this: any, ...args: Parameters<typeof fn>) {
+    const context = this;
     clearTimeout(timer);
     timer = window.setTimeout(() => fn.apply(context, args), delay);
   };
