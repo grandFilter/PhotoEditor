@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { getStageSize, debounce } from "@/utils";
+import { getStageSize } from "@/utils";
+import { debounce } from "@/utils";
 
 export default function useResize() {
   const [size, setSize] = useState(getStageSize());

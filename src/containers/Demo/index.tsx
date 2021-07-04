@@ -1,12 +1,16 @@
 import React, { useCallback } from "react";
-import useResize from "@/services/hooks/useResize";
-import useMouse from "@/services/hooks/useMouse";
+import Layout from "@/components/Layout";
 
-import { drawSelectRange, drawGuideLines } from "@/services/draw/toolkit";
+import useResize from "../../services/hooks/useResize";
+import useMouse from "./hooks/useMouse";
 
-import { setupCanvas, drawBackground, drawAxes } from "@/utils";
-
-import styles from "./styles.module.less";
+import {
+  setupCanvas,
+  drawBackground,
+  drawAxes,
+  drawSelectRange,
+  drawGuideLines,
+} from "./toolkit";
 
 export default function StageCanvas() {
   const { size } = useResize(); // 窗口改变
@@ -44,13 +48,12 @@ export default function StageCanvas() {
   );
 
   return (
-    <>
+    <Layout>
       <canvas
         ref={canvasRef}
         style={{ width: `${size.width}px`, height: `${size.height}px` }}
-        className={styles.stage}
       />
-    </>
+    </Layout>
   );
 }
 

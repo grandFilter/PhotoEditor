@@ -1,13 +1,8 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useContext, useRef, useLayoutEffect } from "react";
 
-import {
-  setupCanvas,
-  getStageSize,
-  // drawGrid,
-  drawBackground,
-  drawAxes,
-  debounce,
-} from "@/utils";
+import { FabricContext } from "@/context/FabricContext";
+
+import useResize from "@/services/hooks/useResize";
 
 import styles from "./styles.module.less";
 
@@ -18,64 +13,20 @@ import styles from "./styles.module.less";
 export default function Stage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const [size, setSize] = useState(getStageSize());
+  const { canvas, createCanvas, loadFromJSON } = useContext(FabricContext);
 
-  useEffect(() => {
-    const ctx = setupCanvas(canvasRef.current);
+  const { size } = useResize(); // 窗口改变
 
-    if (!ctx) return;
-
-    const { width, height } = size;
-    ctx.save();
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(0, 0, width, height);
-    ctx.restore();
-
-    // drawGrid(ctx);
-    drawBackground(ctx);
-    drawAxes(ctx);
-  }, [size]);
-
-  // 窗口改变
-  useEffect(() => {
-    const handleResize = debounce((e: UIEvent) => {
-      setSize(getStageSize());
-    }, 200);
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
-  // 放大 / 缩小
-  useEffect(() => {
+  // init
+  useLayoutEffect(() => {
     const el = canvasRef.current;
-
     if (!el) return;
-
-    let scale = 1;
-
-    const _handleZoom = debounce((event: WheelEvent) => {
-      if (event.deltaY < 0) {
-        scale *= event.deltaY * -2; // Zoom in
-      } else {
-        scale /= event.deltaY * 2; // Zoom out
-      }
-      scale = Math.min(Math.max(0.125, scale), 4); // Restrict scale
-      console.log("scale", scale);
-    }, 100);
-
-    const handleZoom = (event: WheelEvent) => {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      _handleZoom(event);
-    };
-
-    el.addEventListener("wheel", handleZoom);
-    return () => {
-      el.removeEventListener("wheel", handleZoom);
-    };
-  }, []);
+    if (canvasObject) {
+      loadFromJSON(el, { ...size, ...canvasObject });
+    } else {
+      createCanvas(el, size);
+    }
+  }, [createCanvas, loadFromJSON, size]);
 
   return (
     <>
@@ -87,3 +38,106 @@ export default function Stage() {
     </>
   );
 }
+
+// test data
+const canvasObject = {
+  objects: [
+    {
+      type: "circle",
+      originX: "center",
+      originY: "center",
+      left: 50,
+      top: 50,
+      width: 100,
+      height: 100,
+      fill: "#FF00FF",
+      stroke: null,
+      strokeWidth: 1,
+      strokeDashArray: null,
+      strokeLineCap: "butt",
+      strokeLineJoin: "miter",
+      strokeMiterLimit: 10,
+      scaleX: 1,
+      scaleY: 1,
+      angle: 0,
+      flipX: false,
+      flipY: false,
+      opacity: 1,
+      shadow: null,
+      visible: true,
+      clipTo: null,
+      backgroundColor: "",
+      fillRule: "nonzero",
+      globalCompositeOperation: "source-over",
+      transformMatrix: null,
+      radius: 50,
+      startAngle: 0,
+      endAngle: 6.283185307179586,
+    },
+    {
+      type: "rect",
+      originX: "center",
+      originY: "center",
+      left: 126,
+      top: 210,
+      width: 100,
+      height: 100,
+      fill: "#FF0000",
+      stroke: null,
+      strokeWidth: 1,
+      strokeDashArray: null,
+      strokeLineCap: "butt",
+      strokeLineJoin: "miter",
+      strokeMiterLimit: 10,
+      scaleX: 1,
+      scaleY: 1,
+      angle: 0,
+      flipX: false,
+      flipY: false,
+      opacity: 1,
+      shadow: null,
+      visible: true,
+      clipTo: null,
+      backgroundColor: "",
+      fillRule: "nonzero",
+      globalCompositeOperation: "source-over",
+      transformMatrix: null,
+      radius: 50,
+      startAngle: 0,
+      endAngle: 6.283185307179586,
+    },
+    {
+      type: "triangle",
+      originX: "center",
+      originY: "center",
+      left: 250,
+      top: 100,
+      width: 100,
+      height: 100,
+      fill: "#00F00F",
+      stroke: null,
+      strokeWidth: 1,
+      strokeDashArray: null,
+      strokeLineCap: "butt",
+      strokeLineJoin: "miter",
+      strokeMiterLimit: 10,
+      scaleX: 1,
+      scaleY: 1,
+      angle: 0,
+      flipX: false,
+      flipY: false,
+      opacity: 1,
+      shadow: null,
+      visible: true,
+      clipTo: null,
+      backgroundColor: "",
+      fillRule: "nonzero",
+      globalCompositeOperation: "source-over",
+      transformMatrix: null,
+      radius: 50,
+      startAngle: 0,
+      endAngle: 6.283185307179586,
+    },
+  ],
+  background: "",
+};
