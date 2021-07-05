@@ -1,5 +1,15 @@
-const { override, addLessLoader } = require("customize-cra");
+const {
+  override,
+  addLessLoader,
+  addWebpackModuleRule,
+} = require("customize-cra");
 const { alias, configPaths } = require("react-app-rewire-alias");
+
+const path = require("path");
+
+function resolve(dir) {
+  return path.join(__dirname, dir);
+}
 
 module.exports = override(
   alias(configPaths("tsconfig.paths.json")),
@@ -16,5 +26,15 @@ module.exports = override(
         localIdentName: "[path][name]__[local]--[hash:base64:5]", // if you use CSS Modules, and custom `localIdentName`, default is '[local]--[hash:base64:5]'.
       },
     },
+  }),
+  addWebpackModuleRule({
+    test: /\.svg$/,
+    include: [resolve("src/assets/sprites")],
+    use: [
+      {
+        loader: "svg-sprite-loader",
+        options: { symbolId: "icon-[name]" },
+      },
+    ],
   })
 );

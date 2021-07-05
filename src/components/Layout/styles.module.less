@@ -29,9 +29,19 @@
   z-index: 8;
   color: #fff;
   background-color: #2c2c2c;
+  .title {
+    padding-left: 4px;
+    width: 52px;
+    margin: 0;
+    fill: #fff;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
 
-.aside {
+.leftAside {
   width: 240px;
   position: absolute;
   background-color: #fff;
@@ -44,6 +54,36 @@
   border-right: 1px solid #e5e5e5;
   cursor: default;
   z-index: 2;
+  .toolbar {
+    position: absolute;
+    width: 50px;
+    top: 0;
+    bottom: 0;
+    font-size: 13px;
+    cursor: default;
+    z-index: 3;
+    pointer-events: all;
+    background-clip: padding-box;
+    background-color: #000000;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .panels {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    left: 50px;
+    bottom: 0;
+    width: 168px;
+    overflow: hidden;
+    box-sizing: border-box;
+    contain: layout;
+    transition: opacity 0.2s ease-out;
+  }
 }
 .panel {
   overflow: hidden;

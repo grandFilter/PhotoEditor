@@ -4,6 +4,7 @@ import "@/styles.module.less";
 
 import Jumbotron from "@/containers";
 import Demo from "@/containers/Demo";
+import UI from "@/containers/UI";
 
 import { FabricContextProvider } from "@/context/FabricContext";
 
@@ -23,6 +24,9 @@ function App() {
           </Route>
           <Route path="/demo">
             <Demo />
+          </Route>
+          <Route path="/ui">
+            <UI />
           </Route>
         </Switch>
         {/* </HashRouter> */}
