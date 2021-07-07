@@ -10,7 +10,7 @@ export default function LeftAside() {
     <aside className={styles.leftAside}>
       <div className={styles.toolbar}>
         <Icon name="j" />
-        <Icon name="Ç" />
+        <Icon name="ċ" />
       </div>
       <div className={styles.panels}>
         <TextShape />
