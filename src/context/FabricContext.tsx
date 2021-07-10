@@ -1,13 +1,20 @@
 import React, { createContext, useState, useCallback, useEffect } from "react";
 
 import { fabric } from "fabric";
-import { draw, drawGuideLines } from "@/services/draw";
+import { drawGuideLines } from "@/services/fabric/draw";
+
+import { BRUSH_NAME, INTERACTIVE_NAME } from "@/constants";
 
 export const FabricContext = createContext({}) as unknown as React.Context<{
   canvas: fabric.Canvas | null;
   createCanvas: (el: HTMLCanvasElement, options: fabric.ICanvasOptions) => void;
   loadFromJSON: (el: HTMLCanvasElement, json: any) => void;
   activeObject: fabric.Object | null;
+  // 画笔
+  brush: BRUSH_NAME | INTERACTIVE_NAME | null;
+  setBrush: React.Dispatch<
+    React.SetStateAction<BRUSH_NAME | INTERACTIVE_NAME | null>
+  >;
 }>;
 
 export function FabricContextProvider({
@@ -15,8 +22,12 @@ export function FabricContextProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
-  const [activeObject, setActiveObject] = useState<fabric.Object | null>(null);
+  const [canvas, setCanvas] = useState<fabric.Canvas | null>(null); // Fabric canvas 实例
+  const [brush, setBrush] = useState<BRUSH_NAME | INTERACTIVE_NAME | null>(
+    null
+  ); // 画笔
+
+  const [activeObject /* setActiveObject */] = useSelectionState(canvas); // 选中对象
 
   // 创建 Canvas
   const createCanvas = useCallback(
@@ -27,8 +38,13 @@ export function FabricContextProvider({
         selection: true,
         defaultCursor: "default",
         backgroundColor: "#f3f3f3",
+        isDrawingMode: false,
         ...options,
       });
+
+      // canvas.selectionColor = "rgba(0,255,0,0.3)";
+      // canvas.selectionBorderColor = "red";
+      // canvas.selectionLineWidth = 5;
 
       canvas.renderAll();
 
@@ -47,14 +63,40 @@ export function FabricContextProvider({
         canvas.setWidth(json.width);
         canvas.setHeight(json.height);
       },
-      function (o: any, object: any) {
-        fabric.log(o, object);
+      (o: any, object: any) => {
+        // fabric.log(o, object);
       }
     );
     canvas.renderAll();
     setCanvas(canvas);
   }, []);
 
+  // test
+  useEffect(() => {
+    if (!canvas) return;
+
+    drawGuideLines(canvas, 100, 100);
+  }, [canvas]);
+
+  return (
+    <FabricContext.Provider
+      value={{
+        canvas,
+        createCanvas,
+        loadFromJSON,
+        activeObject,
+        brush,
+        setBrush,
+      }}
+    >
+      {children}
+    </FabricContext.Provider>
+  );
+}
+
+// 处理选择元素
+function useSelectionState(canvas: fabric.Canvas | null) {
+  const [activeObject, setActiveObject] = useState<fabric.Object | null>(null);
   const updateActiveObject = useCallback(
     (e: fabric.IEvent) => {
       if (!e || !canvas) return;
@@ -64,7 +106,6 @@ export function FabricContextProvider({
     [canvas, setActiveObject]
   );
 
-  // 处理选择元素
   useEffect(() => {
     if (!canvas) return;
     canvas.on("selection:created", updateActiveObject);
@@ -78,22 +119,8 @@ export function FabricContextProvider({
     };
   }, [canvas, updateActiveObject]);
 
-  // test
-  useEffect(() => {
-    if (!canvas) return;
-    draw(canvas, {
-      from: [0, 0],
-      to: [100, 100],
-      degree: 10,
-    });
-    drawGuideLines(canvas, 100, 100);
-  }, [canvas]);
-
-  return (
-    <FabricContext.Provider
-      value={{ canvas, createCanvas, loadFromJSON, activeObject }}
-    >
-      {children}
-    </FabricContext.Provider>
-  );
+  return [activeObject, setActiveObject] as [
+    typeof activeObject,
+    typeof setActiveObject
+  ];
 }

@@ -1,19 +1,34 @@
-import React from "react";
+import React, { useCallback } from "react";
 
 import Button from "@/components/UI/Button";
 import Icon from "@/components/UI/Icon";
 
+const copyToClipboard = (str: string) => {
+  const el = document.createElement("textarea");
+  el.value = str;
+  el.setAttribute("readonly", "");
+  el.style.position = "absolute";
+  el.style.left = "-9999px";
+  document.body.appendChild(el);
+  el.select();
+  document.execCommand("copy");
+  document.body.removeChild(el);
+};
+
 export default function UI() {
+  const handleCopyIcon = useCallback((name: string) => {
+    copyToClipboard(`<Icon name="${name}" />`);
+  }, []);
   return (
     <>
       <h2>Icon</h2>
 
       {alphabets.map((name) => (
-        <Icon key={name} name={name} />
+        <Icon onClick={() => handleCopyIcon(name)} key={name} name={name} />
       ))}
       <br />
       {frances.map((name) => (
-        <Icon key={name} name={name} />
+        <Icon onClick={() => handleCopyIcon(name)} key={name} name={name} />
       ))}
 
       <h2>Button</h2>

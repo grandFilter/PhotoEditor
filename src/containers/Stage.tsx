@@ -2,6 +2,8 @@ import React, { useContext, useRef, useLayoutEffect } from "react";
 
 import { FabricContext } from "@/context/FabricContext";
 
+import { useDraw } from "@/services/fabric/draw";
+
 import useResize from "@/services/hooks/useResize";
 
 import styles from "./styles.module.less";
@@ -17,11 +19,14 @@ export default function Stage() {
 
   const { size } = useResize(); // 窗口改变
 
+  useDraw();
+
   // init
   useLayoutEffect(() => {
     const el = canvasRef.current;
     if (!el) return;
-    if (canvasObject) {
+    const debug = false;
+    if (debug && canvasObject) {
       loadFromJSON(el, { ...size, ...canvasObject });
     } else {
       createCanvas(el, size);

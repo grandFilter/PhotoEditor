@@ -1,0 +1,190 @@
+import { fabric } from "fabric";
+
+import { useState, useContext, useCallback, useEffect, useMemo } from "react";
+import { FabricContext } from "@/context/FabricContext";
+import { BRUSH_NAME } from "@/constants";
+
+type TMouseOptions = {
+  from: [number, number];
+  to: [number, number];
+};
+
+export function useDraw() {
+  const { canvas, brush } = useContext(FabricContext);
+
+  const drawConfig = useMemo(() => {
+    let drawingObject: fabric.Object | null = null;
+    return {
+      down: ({ from, to }: TMouseOptions) => {},
+      move: ({ from, to }: TMouseOptions) => {
+        if (!canvas) return;
+
+        const [left, top] = from;
+
+        const dx = to[0] - from[0],
+          dy = to[1] - from[1];
+        
+        const { Line, Ellipse, Rect, Triangle } = fabric;
+        // const radius = Math.sqrt(dx * dx + dy * dy) / 2;
+        // const { width, height } = canvas; // as Required<fabric.Canvas>;
+
+        if (drawingObject) {
+          canvas.remove(drawingObject);
+        }
+
+        switch (brush) {
+          case BRUSH_NAME.Pencil:
+            break;
+          case BRUSH_NAME.Line:
+            drawingObject = new Line([...from, ...to], {
+              stroke: "green",
+              selectable: false,
+            });
+            break;
+          case BRUSH_NAME.Ellipse:
+            drawingObject = new Ellipse({
+              left,
+              top,
+              rx: Math.abs(dx),
+              ry: Math.abs(dy),
+              selectable: false,
+            });
+            break;
+          case BRUSH_NAME.Rect:
+            drawingObject = new Rect({
+              left,
+              top,
+              width: dx,
+              height: dy,
+            });
+            break;
+          case BRUSH_NAME.Triangle:
+            drawingObject = new Triangle({
+              left,
+              top,
+              width: dx,
+              height: dy,
+            });
+            break;
+          case BRUSH_NAME.Arrow:
+            break;
+          case BRUSH_NAME.Star:
+            break;
+          default:
+            break;
+        }
+        drawingObject && canvas.add(drawingObject);
+      },
+      up: ({ from, to }: TMouseOptions) => {
+        drawingObject = null;
+      },
+    };
+  }, [brush, canvas]);
+
+  useMouseDraw(canvas, drawConfig);
+}
+
+// 鼠标事件
+function useMouseDraw(
+  canvas: fabric.Canvas | null,
+  config: Partial<{
+    down: (options: TMouseOptions) => void;
+    move: (options: TMouseOptions) => void;
+    up: (options: TMouseOptions) => void;
+  }>
+) {
+  const [drawing, setDrawing] = useState(false);
+  const [mouse, setMouse] = useState({
+    from: [0, 0] as [number, number],
+    to: [0, 0] as [number, number],
+  }); // 鼠标
+
+  const handleDown = useCallback(
+    (options: fabric.IEvent) => {
+      const { pointer } = options;
+      if (!pointer || !canvas) return;
+      setDrawing(true);
+
+      // canvas.discardActiveObject();
+      // canvas.requestRenderAll();
+
+      const data = { ...mouse, from: [pointer.x, pointer.y] } as TMouseOptions;
+      config.down?.(data);
+      setMouse((preValue) => ({ ...preValue, ...data }));
+    },
+    [canvas, config, mouse]
+  );
+  const handleMove = useCallback(
+    (options: fabric.IEvent) => {
+      if (!drawing) return;
+
+      const { pointer } = options;
+      if (!pointer) return;
+
+      const data = { ...mouse, to: [pointer.x, pointer.y] } as TMouseOptions;
+      config.move?.(data);
+      setMouse((preValue) => ({ ...preValue, data }));
+    },
+    [config, drawing, mouse]
+  );
+  const handleUp = useCallback(
+    (options: fabric.IEvent) => {
+      setDrawing(false);
+
+      const { pointer } = options;
+      if (!pointer || !canvas) return;
+
+      const data = { ...mouse, to: [pointer.x, pointer.y] } as TMouseOptions;
+      config.up?.(data);
+      setMouse((preValue) => ({ ...preValue, ...data }));
+
+      // const item = canvas._objects[canvas._objects.length - 1];
+      // canvas.setActiveObject(item);
+      // canvas.requestRenderAll();
+    },
+    [canvas, config, mouse]
+  );
+
+  useEffect(() => {
+    if (!canvas) return;
+    canvas.on("mouse:down", handleDown);
+    canvas.on("mouse:move", handleMove);
+    canvas.on("mouse:up", handleUp);
+    return () => {
+      canvas.off("mouse:down", handleDown);
+      canvas.off("mouse:move", handleMove);
+      canvas.off("mouse:up", handleUp);
+    };
+  }, [canvas, handleDown, handleMove, handleUp]);
+}
+
+/**
+ * 绘制辅助线
+ *
+ * @param {fabric.Canvas} canvas
+ * @param {number} x
+ * @param {number} y
+ */
+export function drawGuideLines(canvas: fabric.Canvas, x: number, y: number) {
+  const { Line } = fabric;
+
+  const {
+    canvas: { width, height },
+  } = canvas.getSelectionContext();
+
+  // 水平辅助线
+  canvas.add(
+    new Line([0, y, width, y], {
+      stroke: "rgba(0, 0, 230, 0.4)",
+      selectable: false,
+    })
+  );
+
+  // 垂直辅助线
+  canvas.add(
+    new Line([x, 0, x, height], {
+      stroke: "rgba(0, 0, 230, 0.4)",
+      selectable: false,
+    })
+  );
+}

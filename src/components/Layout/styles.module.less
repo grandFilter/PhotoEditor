@@ -39,6 +39,23 @@
     justify-content: center;
     align-items: center;
   }
+  .menu {
+    flex-grow: 2;
+    height: 100%;
+    margin: 0;
+    padding: 0 0 0 20px;
+
+    .span {
+      width: 48px;
+      height: 100%;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      &.active {
+        background-color: #18a0fb;
+      }
+    }
+  }
 }
 
 .leftAside {
@@ -50,8 +67,8 @@
   bottom: 0;
   user-select: none;
   display: flex;
-  flex-direction: column;
-  border-right: 1px solid #e5e5e5;
+  flex-direction: row;
+  // border-right: 1px solid #e5e5e5;
   cursor: default;
   z-index: 2;
   .toolbar {
@@ -70,15 +87,30 @@
     align-items: center;
     flex-direction: column;
     justify-content: center;
+    .icon {
+      width: 36px;
+      height: 36px;
+
+      margin-bottom: 5px;
+      border-radius: 4px;
+
+      padding: 5px;
+      &.active {
+        background: rgba(#fff, 0.9);
+        color: rgba(#000, 1);
+      }
+    }
   }
   .panels {
+    background-color: #293039;
+    color: #fff;
     display: flex;
     flex-direction: column;
     position: absolute;
     top: 0;
     left: 50px;
     bottom: 0;
-    width: 168px;
+    min-width: 190px;
     overflow: hidden;
     box-sizing: border-box;
     contain: layout;
