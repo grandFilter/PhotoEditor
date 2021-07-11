@@ -106,7 +106,8 @@ export function useInteraction() {
       // 不可交互
       setHand() {
         canvas.isDrawingMode = false;
-        canvas.selection = false;
+        canvas.skipTargetFind = true; //画板元素不能被选中
+        canvas.selection = false; //画板不显示选中
         canvas.forEachObject((o) => (o.selectable = false));
 
         setBrush(INTERACTIVE_NAME.Hand);

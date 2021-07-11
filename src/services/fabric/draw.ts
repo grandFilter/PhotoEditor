@@ -2,7 +2,9 @@ import { fabric } from "fabric";
 
 import { useState, useContext, useCallback, useEffect, useMemo } from "react";
 import { FabricContext } from "@/context/FabricContext";
-import { BRUSH_NAME } from "@/constants";
+import { BRUSH_NAME, INTERACTIVE_NAME } from "@/constants";
+
+import { useInteraction } from "@/services/fabric/brush";
 
 type TMouseOptions = {
   from: [number, number];
@@ -11,11 +13,53 @@ type TMouseOptions = {
 
 export function useDraw() {
   const { canvas, brush } = useContext(FabricContext);
+  const [, { setMove, selectLatest }] = useInteraction();
+
+  const handleControl = useCallback(
+    (selected: boolean = true) => {
+      if (
+        brush &&
+        ([INTERACTIVE_NAME.Move, INTERACTIVE_NAME.Hand] as string[]).includes(
+          brush
+        )
+      )
+        return;
+      setMove?.();
+      selected && selectLatest?.();
+    },
+    [brush, selectLatest, setMove]
+  );
 
   const drawConfig = useMemo(() => {
-    let drawingObject: fabric.Object | null = null;
+    // fabric.Object | fabric.Textbox
+    let drawingObject: any = null;
+
     return {
-      down: ({ from, to }: TMouseOptions) => {},
+      down: ({ from, to }: TMouseOptions) => {
+        if (!canvas) return;
+
+        const { Textbox } = fabric;
+        const [left, top] = from;
+        switch (brush) {
+          case BRUSH_NAME.Text:
+            canvas.selection = false;
+            drawingObject = new Textbox("", {
+              left,
+              top,
+              fontSize: 16,
+            });
+            canvas.add(drawingObject);
+            drawingObject?.enterEditing();
+            drawingObject?.hiddenTextarea.focus();
+            break;
+          default:
+            break;
+        }
+        if (drawingObject) {
+          handleControl();
+        }
+        drawingObject = null;
+      },
       move: ({ from, to }: TMouseOptions) => {
         if (!canvas) return;
 
@@ -23,7 +67,7 @@ export function useDraw() {
 
         const dx = to[0] - from[0],
           dy = to[1] - from[1];
-        
+
         const { Line, Ellipse, Rect, Triangle } = fabric;
         // const radius = Math.sqrt(dx * dx + dy * dy) / 2;
         // const { width, height } = canvas; // as Required<fabric.Canvas>;
@@ -76,10 +120,11 @@ export function useDraw() {
         drawingObject && canvas.add(drawingObject);
       },
       up: ({ from, to }: TMouseOptions) => {
+        drawingObject && handleControl();
         drawingObject = null;
       },
     };
-  }, [brush, canvas]);
+  }, [brush, canvas, handleControl]);
 
   useMouseDraw(canvas, drawConfig);
 }
@@ -105,8 +150,6 @@ function useMouseDraw(
       if (!pointer || !canvas) return;
       setDrawing(true);
 
-      // canvas.discardActiveObject();
-      // canvas.requestRenderAll();
 
       const data = { ...mouse, from: [pointer.x, pointer.y] } as TMouseOptions;
       config.down?.(data);
@@ -137,10 +180,6 @@ function useMouseDraw(
       const data = { ...mouse, to: [pointer.x, pointer.y] } as TMouseOptions;
       config.up?.(data);
       setMouse((preValue) => ({ ...preValue, ...data }));
-
-      // const item = canvas._objects[canvas._objects.length - 1];
-      // canvas.setActiveObject(item);
-      // canvas.requestRenderAll();
     },
     [canvas, config, mouse]
   );

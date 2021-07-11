@@ -1,81 +1,102 @@
 import React, { useCallback } from "react";
-import Layout from "@/components/Layout";
 
-import useResize from "../../services/hooks/useResize";
-import useMouse from "./hooks/useMouse";
+import Button from "@/components/UI/Button";
+import Icon from "@/components/UI/Icon";
 
-import {
-  setupCanvas,
-  drawBackground,
-  drawAxes,
-  drawSelectRange,
-  drawGuideLines,
-} from "./toolkit";
+const copyToClipboard = (str: string) => {
+  const el = document.createElement("textarea");
+  el.value = str;
+  el.setAttribute("readonly", "");
+  el.style.position = "absolute";
+  el.style.left = "-9999px";
+  document.body.appendChild(el);
+  el.select();
+  document.execCommand("copy");
+  document.body.removeChild(el);
+};
 
-export default function StageCanvas() {
-  const { size } = useResize(); // 窗口改变
-
-  const canvasRef = useCanvas(
-    useCallback(
-      (ctx: CanvasRenderingContext2D) => {
-        setupCanvas(ctx.canvas);
-
-        const { width, height } = size;
-        ctx.save();
-        ctx.fillStyle = "#fff";
-        ctx.fillRect(0, 0, width, height);
-        ctx.restore();
-
-        drawBackground(ctx);
-        drawAxes(ctx);
-      },
-      [size]
-    )
-  );
-
-  useMouse(
-    canvasRef,
-    {
-      resetEnd: true, // 结束后应清除
-      moving({ ctx, from, to }) {
-        // 辅助工具
-        drawSelectRange(ctx, from, to); // 选择区域
-        drawGuideLines(ctx, ...from); // 起点辅助性
-        drawGuideLines(ctx, ...to); // 终点辅助性
-      },
-    },
-    size.width + size.height
-  );
-
+export default function UI() {
+  const handleCopyIcon = useCallback((name: string) => {
+    copyToClipboard(`<Icon name="${name}" />`);
+  }, []);
   return (
-    <Layout>
-      <canvas
-        ref={canvasRef}
-        style={{ width: `${size.width}px`, height: `${size.height}px` }}
-      />
-    </Layout>
+    <>
+      <h2>Icon</h2>
+
+      {alphabets.map((name) => (
+        <Icon onClick={() => handleCopyIcon(name)} key={name} name={name} />
+      ))}
+      <br />
+      {frances.map((name) => (
+        <Icon onClick={() => handleCopyIcon(name)} key={name} name={name} />
+      ))}
+
+      <h2>Button</h2>
+      <Button>Basic Button</Button>
+    </>
   );
 }
 
-function useCanvas<T = CanvasRenderingContext2D>(
-  draw: (gl: T) => void,
-  context: "2d" | "webgl2" = "2d"
-) {
-  const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
+const alphabets = (() => {
+  const alpha = Array.from(Array(10)).map((e, i) => "" + i);
+  const caps = [...Array(26)].map((val, i) => String.fromCharCode(i + 65));
+  return alpha.concat(caps).concat(caps.map((letter) => letter.toLowerCase()));
+})();
 
-  React.useEffect(() => {
-    const ctx = canvasRef.current?.getContext(context) as null | T;
-    if (!ctx) return;
-
-    let animationFrameId = requestAnimationFrame(renderFrame);
-
-    function renderFrame() {
-      //   animationFrameId = requestAnimationFrame(renderFrame);
-      ctx && draw(ctx);
-    }
-
-    return () => cancelAnimationFrame(animationFrameId);
-  }, [draw, context]);
-
-  return canvasRef;
-}
+const frances = [
+  "À",
+  "Á",
+  "Â",
+  "Ã",
+  "Ä",
+  "Å",
+  "Æ",
+  "Ç",
+  "È",
+  "É",
+  "Ê",
+  "Ë",
+  "Ì",
+  "Í",
+  "Î",
+  "Ï",
+  "Ð",
+  "Ñ",
+  "Ò",
+  "Ó",
+  "Ô",
+  "Õ",
+  "Ö",
+  "Ø",
+  "Ù",
+  "Ú",
+  "Û",
+  "Ü",
+  "Ý",
+  "Þ",
+  "ß",
+  "ÿ",
+  "Ā",
+  "Ă",
+  "Ą",
+  "ć",
+  "ĉ",
+  "ċ",
+  "č",
+  "Ď",
+  "Đ",
+  "Ē",
+  "Ĕ",
+  "Ė",
+  "Ę",
+  "Ġ",
+  "Ĥ",
+  "Ħ",
+  "Ĩ",
+  "Ī",
+  "Ĭ",
+  "Į",
+  "İ",
+  "ı",
+  "Ĳ",
+];
