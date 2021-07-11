@@ -13,6 +13,7 @@ export function useTextShape() {
     if (!canvas) return {};
 
     const handleSelectable = (selectable: boolean) => {
+      canvas.discardActiveObject();
       canvas.forEachObject((o) => (o.selectable = selectable));
     };
 
@@ -27,6 +28,9 @@ export function useTextShape() {
       // 自由线
       setPencil() {
         canvas.isDrawingMode = true;
+        canvas.freeDrawingBrush.color = "green";
+
+        handleSelectable(false);
 
         setBrush(BRUSH_NAME.Pencil);
       },
@@ -108,7 +112,8 @@ export function useInteraction() {
         canvas.isDrawingMode = false;
         canvas.skipTargetFind = true; //画板元素不能被选中
         canvas.selection = false; //画板不显示选中
-        canvas.forEachObject((o) => (o.selectable = false));
+        canvas.discardActiveObject();
+        // canvas.forEachObject((o) => (o.selectable = false));
 
         setBrush(INTERACTIVE_NAME.Hand);
       },

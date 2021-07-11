@@ -5,6 +5,7 @@ import { FabricContext } from "@/context/FabricContext";
 import { BRUSH_NAME, INTERACTIVE_NAME } from "@/constants";
 
 import { useInteraction } from "@/services/fabric/brush";
+import { drawArrow } from "@/services/fabric/toolkit";
 
 type TMouseOptions = {
   from: [number, number];
@@ -68,7 +69,7 @@ export function useDraw() {
         const dx = to[0] - from[0],
           dy = to[1] - from[1];
 
-        const { Line, Ellipse, Rect, Triangle } = fabric;
+        const { Line, Ellipse, Rect, Triangle, Path } = fabric;
         // const radius = Math.sqrt(dx * dx + dy * dy) / 2;
         // const { width, height } = canvas; // as Required<fabric.Canvas>;
 
@@ -111,6 +112,18 @@ export function useDraw() {
             });
             break;
           case BRUSH_NAME.Arrow:
+            drawingObject = new Path(
+              drawArrow({
+                from,
+                to,
+                theta: 20,
+                headlen: 20,
+              }),
+              {
+                stroke: "gred",
+                fill: "rgba(255,255,255,0)",
+              }
+            );
             break;
           case BRUSH_NAME.Star:
             break;
@@ -149,7 +162,6 @@ function useMouseDraw(
       const { pointer } = options;
       if (!pointer || !canvas) return;
       setDrawing(true);
-
 
       const data = { ...mouse, from: [pointer.x, pointer.y] } as TMouseOptions;
       config.down?.(data);
@@ -195,35 +207,4 @@ function useMouseDraw(
       canvas.off("mouse:up", handleUp);
     };
   }, [canvas, handleDown, handleMove, handleUp]);
-}
-
-/**
- * 绘制辅助线
- *
- * @param {fabric.Canvas} canvas
- * @param {number} x
- * @param {number} y
- */
-export function drawGuideLines(canvas: fabric.Canvas, x: number, y: number) {
-  const { Line } = fabric;
-
-  const {
-    canvas: { width, height },
-  } = canvas.getSelectionContext();
-
-  // 水平辅助线
-  canvas.add(
-    new Line([0, y, width, y], {
-      stroke: "rgba(0, 0, 230, 0.4)",
-      selectable: false,
-    })
-  );
-
-  // 垂直辅助线
-  canvas.add(
-    new Line([x, 0, x, height], {
-      stroke: "rgba(0, 0, 230, 0.4)",
-      selectable: false,
-    })
-  );
 }

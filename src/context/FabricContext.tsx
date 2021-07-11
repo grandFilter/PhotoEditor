@@ -1,7 +1,7 @@
 import React, { createContext, useState, useCallback, useEffect } from "react";
 
 import { fabric } from "fabric";
-import { drawGuideLines } from "@/services/fabric/draw";
+import { drawAxes, drawGrid, drawBackground } from "@/services/fabric/toolkit";
 
 import { BRUSH_NAME, INTERACTIVE_NAME } from "@/constants";
 
@@ -37,7 +37,7 @@ export function FabricContextProvider({
         preserveObjectStacking: true,
         selection: true,
         defaultCursor: "default",
-        backgroundColor: "#f3f3f3",
+        backgroundColor: "#fff",
         isDrawingMode: false,
         ...options,
       });
@@ -74,8 +74,9 @@ export function FabricContextProvider({
   // test
   useEffect(() => {
     if (!canvas) return;
-
-    drawGuideLines(canvas, 100, 100);
+    // drawGrid(canvas);
+    drawBackground(canvas);
+    drawAxes(canvas, 100, 100);
   }, [canvas]);
 
   return (
