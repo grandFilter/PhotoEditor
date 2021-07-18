@@ -2,7 +2,12 @@ import { fabric } from "fabric";
 
 import { useState, useContext, useCallback, useEffect, useMemo } from "react";
 import { FabricContext } from "@/context/FabricContext";
-import { BRUSH_NAME, INTERACTIVE_NAME } from "@/constants";
+import {
+  BRUSH_NAME,
+  INTERACTIVE_NAME,
+  FILL_COLOR,
+  LINE_COLOR,
+} from "@/constants";
 
 import { useInteraction } from "@/services/fabric/brush";
 import { drawArrow } from "@/services/fabric/toolkit";
@@ -79,14 +84,16 @@ export function useDraw() {
 
         switch (brush) {
           case BRUSH_NAME.Pencil:
+            canvas.freeDrawingBrush.color = LINE_COLOR;
             break;
           case BRUSH_NAME.Line:
             drawingObject = new Line([...from, ...to], {
-              stroke: "green",
+              stroke: LINE_COLOR,
             });
             break;
           case BRUSH_NAME.Ellipse:
             drawingObject = new Ellipse({
+              fill: FILL_COLOR,
               left,
               top,
               rx: Math.abs(dx),
@@ -95,6 +102,7 @@ export function useDraw() {
             break;
           case BRUSH_NAME.Rect:
             drawingObject = new Rect({
+              fill: FILL_COLOR,
               left,
               top,
               width: dx,
@@ -103,6 +111,7 @@ export function useDraw() {
             break;
           case BRUSH_NAME.Triangle:
             drawingObject = new Triangle({
+              fill: FILL_COLOR,
               left,
               top,
               width: dx,
@@ -118,8 +127,7 @@ export function useDraw() {
                 headlen: 20,
               }),
               {
-                stroke: "gred",
-                fill: "rgba(255,255,255,0)",
+                stroke: LINE_COLOR,
               }
             );
             break;

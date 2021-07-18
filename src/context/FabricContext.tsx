@@ -2,7 +2,12 @@ import React, { createContext, useState, useCallback, useEffect } from "react";
 
 import { fabric } from "fabric";
 import { getStageSize } from "@/utils";
-import { BRUSH_NAME, INTERACTIVE_NAME } from "@/constants";
+import {
+  BRUSH_NAME,
+  INTERACTIVE_NAME,
+  BASE_COLOR,
+  STROKE_COLOR,
+} from "@/constants";
 
 export const FabricContext = createContext({}) as unknown as React.Context<{
   canvas: fabric.Canvas | null;
@@ -53,8 +58,8 @@ export function FabricContextProvider({
       });
 
       // 选择样式
-      canvas.selectionColor = "rgba(25, 160, 251, 0.3)";
-      canvas.selectionBorderColor = "rgba(25, 160, 251, 1)";
+      canvas.selectionColor = BASE_COLOR;
+      canvas.selectionBorderColor =STROKE_COLOR;
       canvas.selectionLineWidth = 1;
 
       canvas.renderAll();

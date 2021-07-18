@@ -8,6 +8,7 @@ import { useZoom } from "@/services/fabric/zoom";
 import { useResize } from "@/services/fabric/resize";
 import { useShortcut } from "@/services/fabric/shortcut";
 import { useTransparentBackground } from "@/services/fabric/transparentBackground";
+import {useControls} from '@/services/fabric/controls'
 import { getStageSize } from "@/utils";
 
 import styles from "./styles.module.less";
@@ -25,12 +26,6 @@ export default function Stage() {
 
   // console.log("size", size);
 
-  useDraw();
-  useZoom();
-  useResize();
-  useShortcut();
-  useTransparentBackground();
-
   // init
   useLayoutEffect(() => {
     const el = canvasRef.current;
@@ -43,13 +38,12 @@ export default function Stage() {
     }
   }, [createCanvas, loadFromJSON, size]);
 
-  // test
-  // useEffect(() => {
-  //   if (!canvas) return;
-  //   drawAxes(canvas, 100, 100);
-  //   // drawGrid(canvas);
-  //   drawBackground(canvas);
-  // }, [canvas]);
+  useDraw();
+  useZoom();
+  useResize();
+  useShortcut();
+  useTransparentBackground();
+  useControls();
 
   return (
     <>

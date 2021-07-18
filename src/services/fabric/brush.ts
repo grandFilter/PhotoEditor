@@ -23,7 +23,7 @@ export function useTextShape() {
       // 自由线
       setPencil() {
         canvas.isDrawingMode = true;
-        canvas.freeDrawingBrush.color = "green";
+        
 
         canvas.discardActiveObject();
 
