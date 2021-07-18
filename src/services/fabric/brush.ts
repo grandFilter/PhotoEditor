@@ -12,16 +12,11 @@ export function useTextShape() {
   const action = useMemo(() => {
     if (!canvas) return {};
 
-    const handleSelectable = (selectable: boolean) => {
-      canvas.discardActiveObject();
-      canvas.forEachObject((o) => (o.selectable = selectable));
-    };
-
     return {
       // 文字
       setText() {
         canvas.isDrawingMode = false;
-        handleSelectable(false);
+        canvas.discardActiveObject();
 
         setBrush(BRUSH_NAME.Text);
       },
@@ -30,49 +25,49 @@ export function useTextShape() {
         canvas.isDrawingMode = true;
         canvas.freeDrawingBrush.color = "green";
 
-        handleSelectable(false);
+        canvas.discardActiveObject();
 
         setBrush(BRUSH_NAME.Pencil);
       },
       // 线 Line
       setLine() {
         canvas.isDrawingMode = false;
-        handleSelectable(false);
+        canvas.discardActiveObject();
 
         setBrush(BRUSH_NAME.Line);
       },
       // 椭圆 Ellipse / 圆 Circle
       setEllipse() {
         canvas.isDrawingMode = false;
-        handleSelectable(false);
+        canvas.discardActiveObject();
 
         setBrush(BRUSH_NAME.Ellipse);
       },
       // 矩形
       setRect() {
         canvas.isDrawingMode = false;
-        handleSelectable(false);
+        canvas.discardActiveObject();
 
         setBrush(BRUSH_NAME.Rect);
       },
       // 三角形
       setTriangle() {
         canvas.isDrawingMode = false;
-        handleSelectable(false);
+        canvas.discardActiveObject();
 
         setBrush(BRUSH_NAME.Triangle);
       },
       // 箭头
       setArrow() {
         canvas.isDrawingMode = false;
-        handleSelectable(false);
+        canvas.discardActiveObject();
 
         setBrush(BRUSH_NAME.Arrow);
       },
       // 星
       setStar() {
         canvas.isDrawingMode = false;
-        handleSelectable(false);
+        canvas.discardActiveObject();
 
         setBrush(BRUSH_NAME.Star);
       },
@@ -96,8 +91,8 @@ export function useInteraction() {
       // 移动
       setMove() {
         canvas.isDrawingMode = false;
+        canvas.skipTargetFind = false;
         canvas.selection = true;
-        canvas.forEachObject((o) => (o.selectable = true));
 
         setBrush(INTERACTIVE_NAME.Move);
       },

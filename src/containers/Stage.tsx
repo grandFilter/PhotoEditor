@@ -1,10 +1,14 @@
-import React, { useContext, useRef, useLayoutEffect } from "react";
+import React, { useContext, useRef, useLayoutEffect, useMemo } from "react";
 
 import { FabricContext } from "@/context/FabricContext";
+// import { drawAxes, drawGrid, drawBackground } from "@/services/fabric/toolkit";
 
 import { useDraw } from "@/services/fabric/draw";
-
-import useResize from "@/services/hooks/useResize";
+import { useZoom } from "@/services/fabric/zoom";
+import { useResize } from "@/services/fabric/resize";
+import { useShortcut } from "@/services/fabric/shortcut";
+import { useTransparentBackground } from "@/services/fabric/transparentBackground";
+import { getStageSize } from "@/utils";
 
 import styles from "./styles.module.less";
 
@@ -17,9 +21,15 @@ export default function Stage() {
 
   const { canvas, createCanvas, loadFromJSON } = useContext(FabricContext);
 
-  const { size } = useResize(); // 窗口改变
+  const size = useMemo(() => getStageSize(), []); // 窗口改变
+
+  // console.log("size", size);
 
   useDraw();
+  useZoom();
+  useResize();
+  useShortcut();
+  useTransparentBackground();
 
   // init
   useLayoutEffect(() => {
@@ -33,13 +43,17 @@ export default function Stage() {
     }
   }, [createCanvas, loadFromJSON, size]);
 
+  // test
+  // useEffect(() => {
+  //   if (!canvas) return;
+  //   drawAxes(canvas, 100, 100);
+  //   // drawGrid(canvas);
+  //   drawBackground(canvas);
+  // }, [canvas]);
+
   return (
     <>
-      <canvas
-        ref={canvasRef}
-        style={{ width: `${size.width}px`, height: `${size.height}px` }}
-        className={styles.stage}
-      />
+      <canvas ref={canvasRef} className={styles.stage} />
     </>
   );
 }

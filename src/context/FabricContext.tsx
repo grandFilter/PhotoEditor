@@ -1,8 +1,7 @@
 import React, { createContext, useState, useCallback, useEffect } from "react";
 
 import { fabric } from "fabric";
-import { drawAxes, drawGrid, drawBackground } from "@/services/fabric/toolkit";
-
+import { getStageSize } from "@/utils";
 import { BRUSH_NAME, INTERACTIVE_NAME } from "@/constants";
 
 export const FabricContext = createContext({}) as unknown as React.Context<{
@@ -14,6 +13,14 @@ export const FabricContext = createContext({}) as unknown as React.Context<{
   brush: BRUSH_NAME | INTERACTIVE_NAME | null;
   setBrush: React.Dispatch<
     React.SetStateAction<BRUSH_NAME | INTERACTIVE_NAME | null>
+  >;
+  // 缩放
+  zoom: number;
+  setZoom: React.Dispatch<React.SetStateAction<number>>;
+  // 宽高
+  size: { width: number; height: number };
+  setSize: React.Dispatch<
+    React.SetStateAction<{ width: number; height: number }>
   >;
 }>;
 
@@ -27,6 +34,9 @@ export function FabricContextProvider({
     null
   ); // 画笔
 
+  const [zoom, setZoom] = useState(1);
+  const [size, setSize] = useState(getStageSize());
+
   const [activeObject /* setActiveObject */] = useSelectionState(canvas); // 选中对象
 
   // 创建 Canvas
@@ -34,7 +44,7 @@ export function FabricContextProvider({
     (el: HTMLCanvasElement, options: fabric.ICanvasOptions) => {
       const canvas = new fabric.Canvas(el, {
         stopContextMenu: true,
-        preserveObjectStacking: true,
+        preserveObjectStacking: true, // 阻止选中时层级提示
         selection: true,
         defaultCursor: "default",
         backgroundColor: "#fff",
@@ -42,9 +52,10 @@ export function FabricContextProvider({
         ...options,
       });
 
-      // canvas.selectionColor = "rgba(0,255,0,0.3)";
-      // canvas.selectionBorderColor = "red";
-      // canvas.selectionLineWidth = 5;
+      // 选择样式
+      canvas.selectionColor = "rgba(25, 160, 251, 0.3)";
+      canvas.selectionBorderColor = "rgba(25, 160, 251, 1)";
+      canvas.selectionLineWidth = 1;
 
       canvas.renderAll();
 
@@ -71,14 +82,6 @@ export function FabricContextProvider({
     setCanvas(canvas);
   }, []);
 
-  // test
-  useEffect(() => {
-    if (!canvas) return;
-    // drawGrid(canvas);
-    drawBackground(canvas);
-    drawAxes(canvas, 100, 100);
-  }, [canvas]);
-
   return (
     <FabricContext.Provider
       value={{
@@ -86,8 +89,13 @@ export function FabricContextProvider({
         createCanvas,
         loadFromJSON,
         activeObject,
+
         brush,
         setBrush,
+        zoom,
+        setZoom,
+        size,
+        setSize,
       }}
     >
       {children}

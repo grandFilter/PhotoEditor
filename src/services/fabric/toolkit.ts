@@ -55,7 +55,11 @@ export function drawArrow({
  */
 
 export function drawBackground(canvas: fabric.Canvas, girdSize = 10) {
-  const { width = 0, height = 0 } = canvas;
+  // const zoom = canvas.getZoom();
+  const width = canvas.getWidth();
+  const height = canvas.getHeight();
+
+  //  { width = 0, height = 0 } = canvas;
   const { Rect, Group } = fabric;
   // 垂直网线
   const xTotals = Math.ceil(width / girdSize);
@@ -78,17 +82,21 @@ export function drawBackground(canvas: fabric.Canvas, girdSize = 10) {
       );
     }
   }
-  canvas.add(
-    new Group(rectGroup, {
-      //perPixelTargetFind: true,
-      hasControls: false,
-      hasRotatingPoint: false,
-      selectable: false,
-      lockMovementX: true,
-      lockMovementY: true,
-    })
-  );
+
+  const group = new Group(rectGroup, {
+    name: `custom_background`,
+    //perPixelTargetFind: true,
+    hasControls: false,
+    hasRotatingPoint: false,
+    selectable: false,
+  });
+  canvas.add(group);
+  // 设置为最底层
+  // canvas.moveTo(group, -1); // z-index
+  canvas.sendToBack(group);
   // canvas.renderAll();
+
+  return group;
 }
 
 /**

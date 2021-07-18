@@ -83,7 +83,6 @@ export function useDraw() {
           case BRUSH_NAME.Line:
             drawingObject = new Line([...from, ...to], {
               stroke: "green",
-              selectable: false,
             });
             break;
           case BRUSH_NAME.Ellipse:
@@ -92,7 +91,6 @@ export function useDraw() {
               top,
               rx: Math.abs(dx),
               ry: Math.abs(dy),
-              selectable: false,
             });
             break;
           case BRUSH_NAME.Rect:
