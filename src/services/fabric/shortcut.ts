@@ -12,8 +12,9 @@ export function useShortcut() {
       console.log(`e`, e);
       switch (e.key) {
         case "Backspace":
-          // 删除
-          canvas.remove(canvas.getActiveObject());
+          // 删除, 删除单个 canvas.remove(canvas.getActiveObject())
+          canvas.remove(...canvas.getActiveObjects());
+          canvas.discardActiveObject();
           break;
 
         case "=":
