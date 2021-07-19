@@ -9,7 +9,9 @@ import Demo from "@/containers/Demo";
 import { FabricContextProvider } from "@/context/FabricContext";
 
 import { createBrowserHistory } from "history";
-const history = createBrowserHistory();
+const history = createBrowserHistory({
+  basename: "/PhotoEditor", // The base URL for all locations
+});
 
 function App() {
   return (
