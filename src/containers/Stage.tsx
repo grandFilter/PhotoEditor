@@ -8,7 +8,8 @@ import { useZoom } from "@/services/fabric/zoom";
 import { useResize } from "@/services/fabric/resize";
 import { useShortcut } from "@/services/fabric/shortcut";
 import { useTransparentBackground } from "@/services/fabric/transparentBackground";
-import {useControls} from '@/services/fabric/controls'
+import { useControls } from "@/services/fabric/controls";
+import { useParse } from "@/services/fabric/parse";
 import { getStageSize } from "@/utils";
 
 import styles from "./styles.module.less";
@@ -44,6 +45,7 @@ export default function Stage() {
   useShortcut();
   useTransparentBackground();
   useControls();
+  useParse();
 
   return (
     <>
