@@ -1,5 +1,5 @@
 import { fabric } from "fabric";
-import { useContext, useCallback, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { FabricContext } from "@/context/FabricContext";
 import { STROKE_COLOR } from "@/constants";
 
@@ -13,7 +13,7 @@ export function useControls() {
   useEffect(() => {
     if (!canvas) return;
 
-    const { Control } = fabric;
+    // const { Control } = fabric;
 
     fabric.Object.prototype.transparentCorners = false;
     fabric.Object.prototype.cornerColor = "white"; // 角落点

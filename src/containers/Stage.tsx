@@ -10,6 +10,7 @@ import { useShortcut } from "@/services/fabric/shortcut";
 import { useTransparentBackground } from "@/services/fabric/transparentBackground";
 import { useControls } from "@/services/fabric/controls";
 import { useParse } from "@/services/fabric/parse";
+import { useHover } from "@/services/fabric/hover";
 import { getStageSize } from "@/utils";
 
 import styles from "./styles.module.less";
@@ -46,6 +47,7 @@ export default function Stage() {
   useTransparentBackground();
   useControls();
   useParse();
+  useHover();
 
   return (
     <>
