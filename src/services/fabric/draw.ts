@@ -52,7 +52,7 @@ export function useDraw() {
             drawingObject = new Textbox("", {
               left,
               top,
-              fontSize: 16,
+              fontSize: 20,
             });
             canvas.add(drawingObject);
             drawingObject?.enterEditing();
